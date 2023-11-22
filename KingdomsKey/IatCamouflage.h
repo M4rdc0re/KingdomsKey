@@ -15,7 +15,6 @@ int RandomCompileTimeSeed(void)
 		__TIME__[0] * 36000;
 }
 
-
 // A dummy function that makes the if-statement in 'IatCamouflage' interesting
 PVOID Helper(PVOID* ppAddress) {
 

