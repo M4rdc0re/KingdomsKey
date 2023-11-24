@@ -86,3 +86,6 @@ extern VOID HellsGate(WORD wSystemCall);
 extern HellDescent();
 
 BOOL AntiAnalysis(DWORD dwMilliSeconds);
+
+HMODULE GetModuleHandleH(DWORD dwModuleHash);
+FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiHash);

