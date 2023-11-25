@@ -31,6 +31,8 @@
 #define SystemFunction032_JOAA  0x8CFD40A8
 #define KERNEL32DLL_JOAA       0xFD2AD9BD
 #define USER32DLL_JOAA         0x349D72E7
+#define NTDLLDLL_JOAA   0x0141C4EE
+#define LdrLoadDll_JOAA         0xA22CF128
 
 #define KEY_SIZE 16
 #define HINT_BYTE 0x61
@@ -89,3 +91,4 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds);
 
 HMODULE GetModuleHandleH(DWORD dwModuleHash);
 FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiHash);
+HMODULE LoadLibraryH(LPSTR DllName);

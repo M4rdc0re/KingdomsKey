@@ -81,3 +81,30 @@ HMODULE GetModuleHandleH(char* dwModuleNameHash) {
 
     return NULL;
 }
+
+HMODULE LoadLibraryH(LPSTR DllName) {
+
+	UNICODE_STRING	Ustr = { 0 };
+	WCHAR			wDllName[MAX_PATH] = { 0 };
+	NTSTATUS		STATUS = 0x00;
+	HMODULE			hModule = NULL;
+
+	_CharToWchar(wDllName, DllName, _StrlenA(DllName));
+
+	USHORT DestSize = _StrlenW(wDllName) * sizeof(WCHAR);
+	Ustr.Length = DestSize;
+	Ustr.MaximumLength = DestSize + sizeof(WCHAR);
+	Ustr.Buffer = wDllName;
+
+
+	fnLdrLoadDll pLdrLoadDll = (fnLdrLoadDll)GetProcAddressH(GetModuleHandleH(NTDLLDLL_JOAA), LdrLoadDll_JOAA);
+	if (pLdrLoadDll != NULL && (STATUS = pLdrLoadDll(NULL, 0, &Ustr, &hModule)) == 0x0) {
+		return hModule;
+	}
+
+#ifdef DEBUG
+	PRINTW(L"[!] LdrLoadDll Faild To Load \"%s\" 0x%0.8X \n", wDllName, STATUS);
+#endif // DEBUG
+
+	return NULL;
+}

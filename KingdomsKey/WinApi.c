@@ -60,6 +60,37 @@ PVOID _memcpy(PVOID Destination, PVOID Source, SIZE_T Size)
 	return Destination;
 }
 
+SIZE_T _CharToWchar(PWCHAR Destination, PCHAR Source, SIZE_T MaximumAllowed)
+{
+	INT Length = (INT)MaximumAllowed;
+
+	while (--Length >= 0) {
+		if (!(*Destination++ = *Source++))
+			return MaximumAllowed - Length - 1;
+	}
+
+	return MaximumAllowed - Length;
+}
+
+SIZE_T _StrlenA(LPCSTR String)
+{
+
+	LPCSTR String2;
+
+	for (String2 = String; *String2; ++String2);
+
+	return (String2 - String);
+}
+
+SIZE_T _StrlenW(LPCWSTR String)
+{
+
+	LPCWSTR String2;
+
+	for (String2 = String; *String2; ++String2);
+
+	return (String2 - String);
+}
 
 extern void* __cdecl memset(void*, int, size_t);
 
