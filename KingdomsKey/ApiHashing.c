@@ -25,7 +25,7 @@ FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiNameHash) {
 	PWORD			FunctionOrdinalArray = (PWORD)(pBase + pImgExportDir->AddressOfNameOrdinals);
 
 	for (DWORD i = 0; i < pImgExportDir->NumberOfFunctions; i++) {
-		CHAR* pFunctionName = (CHAR*)(pBase + FunctionNameArray[i]);
+		PCHAR pFunctionName = (PCHAR)(pBase + FunctionNameArray[i]);
 		PVOID	pFunctionAddress = (PVOID)(pBase + FunctionAddressArray[FunctionOrdinalArray[i]]);
 
 		// Hashing every function name `pFunctionName`
@@ -38,7 +38,7 @@ FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiNameHash) {
 	return NULL;
 }
 
-HMODULE GetModuleHandleH(char* dwModuleNameHash) {
+HMODULE GetModuleHandleH(PCHAR dwModuleNameHash) {
 
 	if (dwModuleNameHash == NULL)
 		return NULL;

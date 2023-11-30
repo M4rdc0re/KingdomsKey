@@ -71,8 +71,8 @@ typedef struct _API_HASHING {
 
 }API_HASHING, * PAPI_HASHING;
 
-UINT32 HashStringJenkinsOneAtATime32BitW(_In_ PWCHAR String);
-UINT32 HashStringJenkinsOneAtATime32BitA(_In_ PCHAR String);
+UINT32 HashStringJenkinsOneAtATime32BitW(PWCHAR String);
+UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String);
 
 #define HASHA(API) (HashStringJenkinsOneAtATime32BitA((PCHAR) API))
 #define HASHW(API) (HashStringJenkinsOneAtATime32BitW((PWCHAR) API))

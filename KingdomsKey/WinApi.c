@@ -2,7 +2,7 @@
 #include "Common.h"
 #include "Debug.h"
 
-UINT32 HashStringJenkinsOneAtATime32BitA(_In_ PCHAR String)
+UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String)
 {
 	SIZE_T Index = 0;
 	UINT32 Hash = 0;
@@ -23,7 +23,7 @@ UINT32 HashStringJenkinsOneAtATime32BitA(_In_ PCHAR String)
 }
 
 
-UINT32 HashStringJenkinsOneAtATime32BitW(_In_ PWCHAR String)
+UINT32 HashStringJenkinsOneAtATime32BitW(PWCHAR String)
 {
 	SIZE_T Index = 0;
 	UINT32 Hash = 0;
@@ -53,7 +53,7 @@ CHAR _toUpper(CHAR C)
 
 PVOID _memcpy(PVOID Destination, PVOID Source, SIZE_T Size)
 {
-	for (volatile int i = 0; i < Size; i++) {
+	for (volatile INT i = 0; i < Size; i++) {
 		((BYTE*)Destination)[i] = ((BYTE*)Source)[i];
 	}
 	return Destination;
@@ -91,15 +91,15 @@ SIZE_T _StrlenW(LPCWSTR String)
 	return (String2 - String);
 }
 
-extern void* __cdecl memset(void*, int, size_t);
+extern PVOID __cdecl memset(PVOID, INT, size_t);
 
 #pragma intrinsic(memset)
 #pragma function(memset)
 
-void* __cdecl memset(void* Destination, int Value, size_t Size) {
-	unsigned char* p = (unsigned char*)Destination;
+PVOID __cdecl memset(PVOID Destination, INT Value, size_t Size) {
+	PUCHAR p = (PUCHAR)Destination;
 	while (Size > 0) {
-		*p = (unsigned char)Value;
+		*p = (UCHAR)Value;
 		p++;
 		Size--;
 	}
@@ -109,7 +109,7 @@ void* __cdecl memset(void* Destination, int Value, size_t Size) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-	int _fltused = 0; // it should be a single underscore since the double one is the mangled name
+	INT _fltused = 0; // it should be a single underscore since the double one is the mangled name
 #ifdef __cplusplus
 }
 #endif

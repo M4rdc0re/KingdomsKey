@@ -3,7 +3,7 @@
 #include "Common.h"
 
 // Generate a random compile-time seed
-int RandomCompileTimeSeed(void)
+INT RandomCompileTimeSeed(VOID)
 {
 	return '0' * -40271,
 		__TIME__[7] * 1,
@@ -22,7 +22,7 @@ PVOID Helper(PVOID* ppAddress) {
 		return NULL;
 
 	// setting the first 4 bytes in pAddress to be equal to a random number (less than 255)
-	*(int*)pAddress = RandomCompileTimeSeed() % 0xFF;
+	*(PINT)pAddress = RandomCompileTimeSeed() % 0xFF;
 
 	// saving the base address by pointer, and returning it
 	*ppAddress = pAddress;
@@ -34,13 +34,13 @@ PVOID Helper(PVOID* ppAddress) {
 VOID IatCamouflage() {
 
 	PVOID		pAddress = NULL;
-	int* A = (int*)Helper(&pAddress);
+	PINT A = (PINT)Helper(&pAddress);
 
 	// Impossible if-statement that will never run
 	if (*A > 350) {
 
 		// some random whitelisted WinAPIs
-		unsigned __int64 i = MessageBoxA(NULL, NULL, NULL, NULL);
+		UINT64 i = MessageBoxA(NULL, NULL, NULL, NULL);
 		i = GetLastError();
 		i = SetCriticalSectionSpinCount(NULL, NULL);
 		i = GetWindowContextHelpId(NULL);
