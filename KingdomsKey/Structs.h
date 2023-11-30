@@ -5,12 +5,10 @@
   STRUCTURES
 --------------------------------------------------------------------*/
 
-typedef struct
-{
-	DWORD	Length;         // Size of the data to encrypt/decrypt
-	DWORD	MaximumLength;  // Max size of the data to encrypt/decrypt, although often its the same as Length (USTRING.Length = USTRING.MaximumLength = X)
-	PVOID	Buffer;         // The base address of the data to encrypt/decrypt
-
+typedef struct _UNICODE_STRING {
+	DWORD	Length;         
+	DWORD	MaximumLength; 
+	PVOID	Buffer;         
 } USTRING;
 
 typedef struct _LSA_UNICODE_STRING {
@@ -542,9 +540,6 @@ typedef struct _SYSTEM_PROCESS_INFORMATION
 	SYSTEM_THREAD_INFORMATION Threads[1];
 } SYSTEM_PROCESS_INFORMATION, * PSYSTEM_PROCESS_INFORMATION;
 
-
-// source:http://www.microsoft.com/whdc/system/Sysinternals/MoreThan64proc.mspx
-// https://processhacker.sourceforge.io/doc/ntexapi_8h_source.html#l01202
 typedef enum _SYSTEM_INFORMATION_CLASS
 {
 	SystemBasicInformation, // q: SYSTEM_BASIC_INFORMATION

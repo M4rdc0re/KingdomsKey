@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-#include "Structs.h"
 #include "typedef.h"
 
 // Seed of the HashStringJenkinsOneAtATime32BitA/W funtion in 'WinApi.c'

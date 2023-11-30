@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include "Structs.h"
 #include "Common.h"
 #include "Debug.h"
 

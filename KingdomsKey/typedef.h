@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "Structs.h"
 
 typedef ULONGLONG(WINAPI* fnGetTickCount64)();
 
@@ -23,14 +24,8 @@ typedef BOOL(WINAPI* fnSetFileInformationByHandle)(HANDLE hFile, FILE_INFO_BY_HA
 
 typedef BOOL(WINAPI* fnCloseHandle)(HANDLE hObject);
 
-typedef NTSTATUS(NTAPI* fnSystemFunction032)(
-	struct USTRING* Data,   // Structure of type USTRING that holds information about the buffer to encrypt / decrypt
-	struct USTRING* Key     // Structure of type USTRING that holds information about the key used while encryption / decryption
-);
+typedef NTSTATUS(NTAPI* fnSystemFunction032)(USTRING* Data,USTRING* Key);
 
-typedef NTSTATUS(NTAPI* fnLdrLoadDll)(
-	PWCHAR             PathToFile,
-	ULONG              Flags,
-	PUNICODE_STRING    ModuleFileName,
-	PHANDLE            ModuleHandle
-);
+typedef NTSTATUS(NTAPI* fnLdrLoadDll)(PWCHAR PathToFile, ULONG Flags,PUNICODE_STRING ModuleFileName, PHANDLE ModuleHandle);
+
+typedef NTSTATUS(NTAPI* fnNtDelayExecution)(BOOLEAN Alertable, PLARGE_INTEGER DelayInterval);

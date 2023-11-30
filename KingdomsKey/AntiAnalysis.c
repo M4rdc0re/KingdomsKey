@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include <stdio.h>
-#include "Structs.h"
 #include "Common.h"
 #include "Debug.h"
 
@@ -155,10 +154,6 @@ BOOL DeleteSelf() {
 	return TRUE;
 }
 
-typedef NTSTATUS(NTAPI* fnNtDelayExecution)(
-	BOOLEAN              Alertable,
-	PLARGE_INTEGER       DelayInterval
-);
 
 BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 

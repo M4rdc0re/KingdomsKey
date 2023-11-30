@@ -1,12 +1,11 @@
 #include <Windows.h>
-#include "Structs.h"
 #include "Common.h"
 #include "Debug.h"
 
 PTEB RtlGetThreadEnvironmentBlock() {
 #if _WIN64
 	return (PTEB)__readgsqword(0x30);
-	#else
+#else
 	return(PTEB)__readfsdword(0x16);
 #endif
 }

@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include <stdio.h>
-#include "Structs.h"
 #include "Common.h"
 #include "Debug.h"
 

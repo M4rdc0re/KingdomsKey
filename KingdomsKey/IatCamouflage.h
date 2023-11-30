@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include <stdio.h>
-#include "Structs.h"
 #include "Common.h"
 
 // Generate a random compile-time seed
