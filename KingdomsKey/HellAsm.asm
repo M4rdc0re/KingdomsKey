@@ -1,23 +1,26 @@
-; Hell's Gate
-; Dynamic system call invocation 
-; 
-; by smelly__vx (@RtlMateusz) and am0nsec (@am0nsec)
-
 .data
-	wSystemCall DWORD 000h
+	wSystemCall DWORD 0h
 
 .code 
-	HellsGate PROC
-		mov wSystemCall, 000h
-		mov wSystemCall, ecx
+	ConfS PROC
+		xor eax, eax
+		mov wSystemCall, eax
+		mov eax, ecx
+		mov wSystemCall, eax
 		ret
-	HellsGate ENDP
+	ConfS ENDP
 
-	HellDescent PROC
-		mov r10, rcx
+	RunSys PROC
+		xor r10, r10
+		mov rax, rcx
+		mov r10, rax
 		mov eax, wSystemCall
-
+		jmp Run
+		xor eax, eax
+		xor rcx, rcx
+	Run:
 		syscall
+		xor r10, r10
 		ret
-	HellDescent ENDP
+	RunSys ENDP
 end

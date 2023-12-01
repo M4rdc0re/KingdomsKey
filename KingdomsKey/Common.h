@@ -83,8 +83,8 @@ BOOL GetImageExportDirectory(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY* ppImage
 BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDirectory, PVX_TABLE_ENTRY pVxTableEntry);
 
 // These are functions prototypes - functions are defined in 'HellAsm.asm'
-extern VOID HellsGate(WORD wSystemCall);
-extern HellDescent();
+extern VOID ConfS(WORD wSystemCall);
+extern RunSys();
 
 BOOL AntiAnalysis(DWORD dwMilliSeconds);
 

