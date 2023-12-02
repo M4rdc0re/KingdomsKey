@@ -11,7 +11,7 @@
 
 ### Usage
 * Hasher to calculate syscall hashes
-* RC4Encrypt to generate a encrypted key and encrypt the payload
+* RC4Encrypter to generate a encrypted key and encrypt the payload
   
 ### Credits
 * Maldev Academy (https://maldevacademy.com/)
