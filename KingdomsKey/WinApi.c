@@ -2,47 +2,6 @@
 #include "Common.h"
 #include "Debug.h"
 
-UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String)
-{
-	SIZE_T Index = 0;
-	UINT32 Hash = 0;
-	SIZE_T Length = lstrlenA(String);
-
-	while (Index != Length)
-	{
-		Hash += String[Index++];
-		Hash += Hash << INITIAL_SEED;
-		Hash ^= Hash >> 6;
-	}
-
-	Hash += Hash << 3;
-	Hash ^= Hash >> 11;
-	Hash += Hash << 15;
-
-	return Hash;
-}
-
-
-UINT32 HashStringJenkinsOneAtATime32BitW(PWCHAR String)
-{
-	SIZE_T Index = 0;
-	UINT32 Hash = 0;
-	SIZE_T Length = lstrlenW(String);
-
-	while (Index != Length)
-	{
-		Hash += String[Index++];
-		Hash += Hash << INITIAL_SEED;
-		Hash ^= Hash >> 6;
-	}
-
-	Hash += Hash << 3;
-	Hash ^= Hash >> 11;
-	Hash += Hash << 15;
-
-	return Hash;
-}
-
 CHAR _toUpper(CHAR C)
 {
 	if (C >= 'a' && C <= 'z')
@@ -89,6 +48,47 @@ SIZE_T _StrlenW(LPCWSTR String)
 	for (String2 = String; *String2; ++String2);
 
 	return (String2 - String);
+}
+
+UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String)
+{
+	SIZE_T Index = 0;
+	UINT32 Hash = 0;
+	SIZE_T Length = _StrlenA(String);
+
+	while (Index != Length)
+	{
+		Hash += String[Index++];
+		Hash += Hash << INITIAL_SEED;
+		Hash ^= Hash >> 6;
+	}
+
+	Hash += Hash << 3;
+	Hash ^= Hash >> 11;
+	Hash += Hash << 15;
+
+	return Hash;
+}
+
+
+UINT32 HashStringJenkinsOneAtATime32BitW(PWCHAR String)
+{
+	SIZE_T Index = 0;
+	UINT32 Hash = 0;
+	SIZE_T Length = _StrlenW(String);
+
+	while (Index != Length)
+	{
+		Hash += String[Index++];
+		Hash += Hash << INITIAL_SEED;
+		Hash ^= Hash >> 6;
+	}
+
+	Hash += Hash << 3;
+	Hash ^= Hash >> 11;
+	Hash += Hash << 15;
+
+	return Hash;
 }
 
 extern PVOID __cdecl memset(PVOID, INT, size_t);
