@@ -37,7 +37,7 @@
 typedef struct _VX_TABLE_ENTRY {
 	PVOID   pAddress;
 	UINT32	uHash;
-	WORD    wSystemCall;
+	WORD    wSysC;
 } VX_TABLE_ENTRY, * PVX_TABLE_ENTRY;
 
 typedef struct _VX_TABLE {

