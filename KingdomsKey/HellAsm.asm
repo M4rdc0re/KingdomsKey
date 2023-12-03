@@ -20,7 +20,6 @@
 		xor eax, eax
 	Go:
 		syscall
-		xor r10, r10
 		ret
 	RunSys ENDP
 end
