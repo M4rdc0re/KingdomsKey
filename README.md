@@ -16,3 +16,6 @@
 ### Credits
 * Maldev Academy (https://maldevacademy.com/)
 * HellsGate (https://github.com/am0nsec/HellsGate)
+
+## Disclaimer
+This repository is created for educational purposes only. Any legal responsibility belongs to the person or organization that uses it.
