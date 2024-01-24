@@ -2,7 +2,7 @@
 #include <Windows.h>
 
 // uncomment to enable debug mode
-//\
+//
 #define DEBUG
 
 #ifdef DEBUG

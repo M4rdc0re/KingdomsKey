@@ -70,7 +70,7 @@ int main() {
 	printf("#define %s%s \t0x%0.8X \n", "USER32DLL", STR, HashStringJenkinsOneAtATime32BitA("USER32.DLL"));
 	printf("#define %s%s \t0x%0.8X \n", "NTDLLDLL", STR, HashStringJenkinsOneAtATime32BitA("NTDLL.DLL"));
 	printf("#define %s%s \t0x%0.8X \n", "LdrLoadDll", STR, HashStringJenkinsOneAtATime32BitA("LdrLoadDll"));
-
+	printf("#define %s%s \t0x%0.8X \n", "Notepad", STR, HashStringJenkinsOneAtATime32BitW(L"Notepad.exe"));
 	getchar();
 
 	return 0;

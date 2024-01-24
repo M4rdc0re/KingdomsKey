@@ -50,6 +50,15 @@ SIZE_T _StrlenW(LPCWSTR String)
 	return (String2 - String);
 }
 
+UINT32 _CopyDotStr(PCHAR String)
+{
+	for (UINT32 i = 0; i < _StrlenA(String); i++)
+	{
+		if (String[i] == '.')
+			return i;
+	}
+}
+
 UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String)
 {
 	SIZE_T Index = 0;
