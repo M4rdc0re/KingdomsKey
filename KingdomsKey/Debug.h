@@ -1,12 +1,10 @@
 #pragma once
 #include <Windows.h>
 
-// uncomment to enable debug mode
-//
+//\
 #define DEBUG
 
 #ifdef DEBUG
-// wprintf replacement
 #define PRINTW( STR, ... )                                                                  \
     if (1) {                                                                                \
         LPWSTR buf = (LPWSTR)HeapAlloc( GetProcessHeap(), HEAP_ZERO_MEMORY, 1024 );         \
@@ -16,7 +14,6 @@
             HeapFree( GetProcessHeap(), 0, buf );                                           \
         }                                                                                   \
     }  
-// printf replacement
 #define PRINTA( STR, ... )                                                                  \
     if (1) {                                                                                \
         LPSTR buf = (LPSTR)HeapAlloc( GetProcessHeap(), HEAP_ZERO_MEMORY, 1024 );           \
@@ -26,4 +23,4 @@
             HeapFree( GetProcessHeap(), 0, buf );                                           \
         }                                                                                   \
     }  
-#endif // DEBUG
+#endif

@@ -118,7 +118,7 @@ PVOID __cdecl memset(PVOID Destination, INT Value, size_t Size) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-	INT _fltused = 0; // it should be a single underscore since the double one is the mangled name
+	INT _fltused = 0;
 #ifdef __cplusplus
 }
 #endif

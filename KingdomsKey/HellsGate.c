@@ -12,19 +12,16 @@ PTEB RtlGetThreadEnvironmentBlock() {
 
 
 BOOL GetImageExportDirectory(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY * ppImageExportDirectory) {
-	// Get DOS header
 	PIMAGE_DOS_HEADER pImageDosHeader = (PIMAGE_DOS_HEADER)pModuleBase;
 	if (pImageDosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
 		return FALSE;
 	}
 
-	// Get NT headers
 	PIMAGE_NT_HEADERS pImageNtHeaders = (PIMAGE_NT_HEADERS)((PBYTE)pModuleBase + pImageDosHeader->e_lfanew);
 	if (pImageNtHeaders->Signature != IMAGE_NT_SIGNATURE) {
 		return FALSE;
 	}
 
-	// Get the EAT
 	*ppImageExportDirectory = (PIMAGE_EXPORT_DIRECTORY)((PBYTE)pModuleBase + pImageNtHeaders->OptionalHeader.DataDirectory[0].VirtualAddress);
 	return TRUE;
 }
@@ -41,20 +38,14 @@ BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDire
 		if (HASHA(pczFunctionName) == pVxTableEntry->uHash) {
 			pVxTableEntry->pAddress = pFunctionAddress;
 
-			// Quick and dirty fix in case the function has been hooked
 			WORD cw = 0;
 			while (TRUE) {
-				// check if syscall, in this case we are too far
 				if (*((PBYTE)pFunctionAddress + cw) == 0x0f && *((PBYTE)pFunctionAddress + cw + 1) == 0x05)
 					return FALSE;
 
-				// check if ret, in this case we are also probaly too far
 				if (*((PBYTE)pFunctionAddress + cw) == 0xc3)
 					return FALSE;
 
-				// First opcodes should be :
-				//    MOV R10, RCX
-				//    MOV RCX, <syscall>
 				if (*((PBYTE)pFunctionAddress + cw) == 0x4c
 					&& *((PBYTE)pFunctionAddress + 1 + cw) == 0x8b
 					&& *((PBYTE)pFunctionAddress + 2 + cw) == 0xd1

@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include "typedef.h"
 
-// Seed of the HashStringJenkinsOneAtATime32BitA/W funtion in 'WinApi.c'
 #define INITIAL_SEED	8
 
 #define NEW_STREAM L":M4rdc0re"
@@ -75,12 +74,10 @@ UINT32 HashStringJenkinsOneAtATime32BitA(PCHAR String);
 #define HASHA(API) (HashStringJenkinsOneAtATime32BitA((PCHAR) API))
 #define HASHW(API) (HashStringJenkinsOneAtATime32BitW((PWCHAR) API))
 
-// These are function prototypes - functions are defined in 'HellsGate.c'
 PTEB RtlGetThreadEnvironmentBlock();
 BOOL GetImageExportDirectory(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY* ppImageExportDirectory);
 BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDirectory, PVX_TABLE_ENTRY pVxTableEntry);
 
-// These are functions prototypes - functions are defined in 'HellAsm.asm'
 extern VOID ConfS(WORD wSystemCall);
 extern RunSys();
 

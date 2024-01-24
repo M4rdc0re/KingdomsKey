@@ -38,7 +38,7 @@ HMODULE GetModuleHandleH(DWORD dwModuleHash) {
 
 #ifdef DEBUG
 	PRINTA("[!] GetModuleHandleH Failed To Retrieve The Handle Of Module Of Hash Value : 0x%0.8X \n", dwModuleHash);
-#endif // DEBUG
+#endif
 
 	return NULL;
 }
@@ -110,7 +110,7 @@ HMODULE LoadLibraryH(LPSTR DllName) {
 
 #ifdef DEBUG
 	PRINTW(L"[!] LdrLoadDll Faild To Load \"%s\" 0x%0.8X \n", wDllName, STATUS);
-#endif // DEBUG
+#endif
 
 	return NULL;
 }
