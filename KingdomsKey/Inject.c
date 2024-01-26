@@ -7,6 +7,7 @@ UCHAR ProtectedKey[] = { 0x36, 0x26, 0x54, 0x7A, 0x42, 0xFA, 0x3B, 0x72, 0xBF, 0
 
 VX_TABLE 	g_Sys = { 0 };
 API_HASHING g_Api = { 0 };
+HMODULE hNtdll;
 
 BOOL InitializeSyscalls() {
 
@@ -47,23 +48,29 @@ BOOL InitializeSyscalls() {
 	if (!GetVxTableEntry(pLdrDataEntry->DllBase, pImageExportDirectory, &g_Sys.NtDelayExecution))
 		return FALSE;
 
-	g_Api.pCallNextHookEx = (fnCallNextHookEx)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), CallNextHookEx_JOAA);
-	g_Api.pDefWindowProcW = (fnDefWindowProcW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), DefWindowProcW_JOAA);
-	g_Api.pGetMessageW = (fnGetMessageW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), GetMessageW_JOAA);
-	g_Api.pSetWindowsHookExW = (fnSetWindowsHookExW)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), SetWindowsHookExW_JOAA);
-	g_Api.pUnhookWindowsHookEx = (fnUnhookWindowsHookEx)GetProcAddressH(GetModuleHandleH(USER32DLL_JOAA), UnhookWindowsHookEx_JOAA);
+	HMODULE hUser32 = GetModuleHandleH(USER32DLL_JOAA);
+
+	g_Api.pCallNextHookEx = (fnCallNextHookEx)GetProcAddressH(hUser32, CallNextHookEx_JOAA);
+	g_Api.pDefWindowProcW = (fnDefWindowProcW)GetProcAddressH(hUser32, DefWindowProcW_JOAA);
+	g_Api.pGetMessageW = (fnGetMessageW)GetProcAddressH(hUser32, GetMessageW_JOAA);
+	g_Api.pSetWindowsHookExW = (fnSetWindowsHookExW)GetProcAddressH(hUser32, SetWindowsHookExW_JOAA);
+	g_Api.pUnhookWindowsHookEx = (fnUnhookWindowsHookEx)GetProcAddressH(hUser32, UnhookWindowsHookEx_JOAA);
 
 	if (g_Api.pCallNextHookEx == NULL || g_Api.pDefWindowProcW == NULL || g_Api.pGetMessageW == NULL || g_Api.pSetWindowsHookExW == NULL || g_Api.pUnhookWindowsHookEx == NULL)
 		return FALSE;
 
-	g_Api.pGetModuleFileNameW = (fnGetModuleFileNameW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetModuleFileNameW_JOAA);
-	g_Api.pCreateFileW = (fnCreateFileW)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), CreateFileW_JOAA);
-	g_Api.pGetTickCount64 = (fnGetTickCount64)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), GetTickCount64_JOAA);
-	g_Api.pOpenProcess = (fnOpenProcess)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), OpenProcess_JOAA);
-	g_Api.pSetFileInformationByHandle = (fnSetFileInformationByHandle)GetProcAddressH(GetModuleHandleH(KERNEL32DLL_JOAA), SetFileInformationByHandle_JOAA);
+	HMODULE hKernel32 = GetModuleHandleH(KERNEL32DLL_JOAA);
+
+	g_Api.pGetModuleFileNameW = (fnGetModuleFileNameW)GetProcAddressH(hKernel32, GetModuleFileNameW_JOAA);
+	g_Api.pCreateFileW = (fnCreateFileW)GetProcAddressH(hKernel32, CreateFileW_JOAA);
+	g_Api.pGetTickCount64 = (fnGetTickCount64)GetProcAddressH(hKernel32, GetTickCount64_JOAA);
+	g_Api.pOpenProcess = (fnOpenProcess)GetProcAddressH(hKernel32, OpenProcess_JOAA);
+	g_Api.pSetFileInformationByHandle = (fnSetFileInformationByHandle)GetProcAddressH(hKernel32, SetFileInformationByHandle_JOAA);
 
 	if (g_Api.pGetModuleFileNameW == NULL || g_Api.pCreateFileW == NULL || g_Api.pGetTickCount64 == NULL || g_Api.pOpenProcess == NULL || g_Api.pSetFileInformationByHandle == NULL)
 		return FALSE;
+
+	hNtdll = GetModuleHandleH(NTDLLDLL_JOAA);
 
 	return TRUE;
 }

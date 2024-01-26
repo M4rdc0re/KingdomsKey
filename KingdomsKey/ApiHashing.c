@@ -2,6 +2,8 @@
 #include "Common.h"
 #include "Debug.h"
 
+extern HMODULE hNtdll;
+
 HMODULE GetModuleHandleH(DWORD dwModuleHash) {
 	if (dwModuleHash == NULL)
 		return NULL;
@@ -103,7 +105,7 @@ HMODULE LoadLibraryH(LPSTR DllName) {
 	Ustr.Buffer = wDllName;
 
 
-	fnLdrLoadDll pLdrLoadDll = (fnLdrLoadDll)GetProcAddressH(GetModuleHandleH(NTDLLDLL_JOAA), LdrLoadDll_JOAA);
+	fnLdrLoadDll pLdrLoadDll = (fnLdrLoadDll)GetProcAddressH(hNtdll, LdrLoadDll_JOAA);
 	if (pLdrLoadDll != NULL && (STATUS = pLdrLoadDll(NULL, 0, &Ustr, &hModule)) == 0x0) {
 		return hModule;
 	}
