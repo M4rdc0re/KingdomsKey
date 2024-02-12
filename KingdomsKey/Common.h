@@ -78,7 +78,7 @@ PTEB RtlGetThreadEnvironmentBlock();
 BOOL GetImageExportDirectory(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY* ppImageExportDirectory);
 BOOL GetVxTableEntry(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDirectory, PVX_TABLE_ENTRY pVxTableEntry);
 
-extern VOID ConfS(WORD wSystemCall);
+extern void ConfS(WORD wSystemCall);
 extern RunSys();
 
 BOOL InitializeSyscalls();

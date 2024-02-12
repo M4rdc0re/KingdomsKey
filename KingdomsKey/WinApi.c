@@ -12,7 +12,7 @@ CHAR _toUpper(CHAR C)
 
 PVOID _memcpy(PVOID Destination, PVOID Source, SIZE_T Size)
 {
-	for (volatile INT i = 0; i < Size; i++) {
+	for (volatile int i = 0; i < Size; i++) {
 		((BYTE*)Destination)[i] = ((BYTE*)Source)[i];
 	}
 	return Destination;
@@ -20,7 +20,7 @@ PVOID _memcpy(PVOID Destination, PVOID Source, SIZE_T Size)
 
 SIZE_T _CharToWchar(PWCHAR Destination, PCHAR Source, SIZE_T MaximumAllowed)
 {
-	INT Length = (INT)MaximumAllowed;
+	int Length = (int)MaximumAllowed;
 
 	while (--Length >= 0) {
 		if (!(*Destination++ = *Source++))
@@ -100,12 +100,12 @@ UINT32 HashStringJenkinsOneAtATime32BitW(PWCHAR String)
 	return Hash;
 }
 
-extern PVOID __cdecl memset(PVOID, INT, size_t);
+extern PVOID __cdecl memset(PVOID, int, size_t);
 
 #pragma intrinsic(memset)
 #pragma function(memset)
 
-PVOID __cdecl memset(PVOID Destination, INT Value, size_t Size) {
+PVOID __cdecl memset(PVOID Destination, int Value, size_t Size) {
 	PUCHAR p = (PUCHAR)Destination;
 	while (Size > 0) {
 		*p = (UCHAR)Value;
@@ -118,7 +118,7 @@ PVOID __cdecl memset(PVOID Destination, INT Value, size_t Size) {
 #ifdef __cplusplus
 extern "C" {
 #endif
-	INT _fltused = 0;
+	int _fltused = 0;
 #ifdef __cplusplus
 }
 #endif

@@ -10,7 +10,7 @@ DWORD g_dwMouseClicks = NULL;
 extern VX_TABLE g_Sys;
 extern API_HASHING g_Api;
 
-LRESULT CALLBACK HookEvent(INT nCode, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK HookEvent(int nCode, WPARAM wParam, LPARAM lParam) {
 
 	if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || wParam == WM_MBUTTONDOWN) {
 #ifdef DEBUG

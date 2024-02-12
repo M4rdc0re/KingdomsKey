@@ -6,9 +6,9 @@ typedef ULONGLONG(WINAPI* fnGetTickCount64)();
 
 typedef HANDLE(WINAPI* fnOpenProcess)(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
 
-typedef LRESULT(WINAPI* fnCallNextHookEx)(HHOOK hhk, INT nCode, WPARAM wParam, LPARAM lParam);
+typedef LRESULT(WINAPI* fnCallNextHookEx)(HHOOK hhk, int nCode, WPARAM wParam, LPARAM lParam);
 
-typedef HHOOK(WINAPI* fnSetWindowsHookExW)(INT idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId);
+typedef HHOOK(WINAPI* fnSetWindowsHookExW)(int idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId);
 
 typedef BOOL(WINAPI* fnGetMessageW)(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 
