@@ -10,7 +10,7 @@
 * No CRT library imports
 
 ### Usage
-* Hasher to calculate syscall hashes
+* Hasher to calculate API hashes
 * RC4Encrypter to generate a encrypted key and encrypt the payload
   
 ### Credits
