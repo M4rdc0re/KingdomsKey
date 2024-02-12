@@ -11,7 +11,7 @@
 
 ### Usage
 * Hasher to calculate API hashes
-* RC4Encrypter to generate a encrypted key and encrypt the payload
+* PayloadBuilder to generate a encrypted key and encrypt the payload
   
 ### Credits
 * Maldev Academy (https://maldevacademy.com/)
